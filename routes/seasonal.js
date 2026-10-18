@@ -23,8 +23,15 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { name, brand, category, season, availableMonths, notes } =
-      req.body ?? {};
+const {
+  name,
+  brand,
+  category,
+  season,
+  availableMonths,
+  notes,
+  editedBy
+} = req.body ?? {};
 
     // Validate required text fields
     const requiredFields = [name, brand, category, season];
@@ -56,16 +63,33 @@ router.post("/", async (req, res) => {
       });
     }
 
-    const product = {
-      name: name.trim(),
-      brand: brand.trim(),
-      category: category.trim(),
-      season: season.trim(),
-      availableMonths: [...new Set(availableMonths)],
-      notes: notes?.trim() ?? "",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+    
+const now = new Date();
+
+const product = {
+  name: name.trim(),
+  brand: brand.trim(),
+  category: category.trim(),
+  season: season.trim(),
+  availableMonths: [...new Set(availableMonths)],
+  notes: notes?.trim() ?? "",
+
+  // Seasonal classification
+  seasonStatus: "estimated",
+
+  // Original source
+  source: "Community",
+
+  // Creation information
+  createdAt: now,
+  createdBy: null,
+
+  // Update information
+  updatedAt: now,
+  lastEditedBy: null,
+  lastEditedAt: null
+};
+
 
     const db = getDatabase();
     const result = await db
@@ -102,8 +126,17 @@ router.put("/:id", async (req, res) => {
     }
 
     // Get updated product data
-    const { name, brand, category, season, availableMonths, notes } =
-      req.body ?? {};
+    
+    const {
+    name,
+    brand,
+    category,
+    season,
+    availableMonths,
+    notes,
+    editedBy
+    } = req.body ?? {};
+
 
     // Validate required fields
     const requiredFields = [name, brand, category, season];
@@ -135,6 +168,12 @@ router.put("/:id", async (req, res) => {
       });
     }
 
+    if (typeof editedBy !== "string" || editedBy.trim() === "") {
+    return res.status(400).json({
+        error: "Editor name is required"
+    });
+    }
+
     // Prepare updated data
     const updatedData = {
       name: name.trim(),
@@ -143,7 +182,9 @@ router.put("/:id", async (req, res) => {
       season: season.trim(),
       availableMonths: [...new Set(availableMonths)],
       notes: notes?.trim() ?? "",
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      lastEditedBy: editedBy.trim(),
+      lastEditedAt: new Date()
     };
 
     const db = getDatabase();
