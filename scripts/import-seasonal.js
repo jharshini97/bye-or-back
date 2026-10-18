@@ -1,7 +1,7 @@
 
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-
+import { normalizeCategory } from "./category-groups.js";
 import {
   connectToDatabase,
   closeDatabaseConnection
@@ -48,13 +48,23 @@ async function importProducts() {
       );
     }
 
+    const originalCategory = candidate.category?.trim() || null;
+    const category = normalizeCategory(originalCategory);
+
+    if (category === null) {
+    throw new Error(
+        `Unknown category: ${originalCategory} (fdcId: ${candidate.fdcId})`
+    );
+    }
+        
     const now = new Date();
 
     const product = {
       fdcId: candidate.fdcId,
       name: candidate.name,
       brand: candidate.brand,
-      category: candidate.category || "Uncategorized",
+      category,
+    originalCategory,
 
       season: candidate.candidateSeason,
       availableMonths: [...months],

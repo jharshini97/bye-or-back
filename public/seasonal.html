@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Seasonal Products | Bye or Back</title>
-
+    <link rel="stylesheet" href="css/seasonal.css">
 </head>
 
 <body>
@@ -22,6 +22,10 @@
     <section aria-labelledby="page-title">
       <h2 id="page-title">Seasonal Products</h2>
       <p>Discover your favorite seasonal grocery products!</p>
+
+        <button type="button" id="add-product-button">
+        + Add Product
+        </button>
 
       <label for="product-search">Search by name or brand</label>
       <input
@@ -54,6 +58,108 @@
       <div id="upcoming-products"></div>
     </section>
   </main>
+
+<dialog id="add-product-dialog"
+        aria-labelledby="add-product-title">
+
+  <h2 id="add-product-title">Add Seasonal Product</h2>
+
+  <p>Enter the product information below.</p>
+
+
+<form id="add-product-form">
+
+  <div>
+    <label for="product-name">Product Name</label>
+    <input
+      type="text"
+      id="product-name"
+      name="name"
+      required
+    >
+  </div>
+
+  <div>
+    <label for="product-brand">Brand</label>
+    <input
+      type="text"
+      id="product-brand"
+      name="brand"
+      required
+    >
+  </div>
+
+
+<div>
+  <label for="product-category">
+    Category (optional)
+  </label>
+
+  <select id="product-category" name="category">
+    <option value="">Select a category</option>
+    <option value="Sweets &amp; Candy">Sweets &amp; Candy</option>
+    <option value="Bakery &amp; Baking">Bakery &amp; Baking</option>
+    <option value="Drinks">Drinks</option>
+    <option value="Frozen Desserts">Frozen Desserts</option>
+    <option value="Dairy &amp; Alternatives">Dairy &amp; Alternatives</option>
+    <option value="Snacks">Snacks</option>
+    <option value="Breakfast &amp; Cereal">Breakfast &amp; Cereal</option>
+    <option value="Pantry &amp; Prepared Foods">Pantry &amp; Prepared Foods</option>
+    <option value="Produce">Produce</option>
+    <option value="Other / Uncategorized">Other / Uncategorized</option>
+  </select>
+</div>
+
+
+  <div>
+    <label for="product-season">Season</label>
+    <select id="product-season" name="season" required>
+      <option value="">Select a season</option>
+      <option value="Spring">Spring</option>
+      <option value="Summer">Summer</option>
+      <option value="Fall">Fall</option>
+      <option value="Winter">Winter</option>
+    </select>
+  </div>
+
+  <fieldset>
+    <legend>Available Months</legend>
+
+    <label><input type="checkbox" name="availableMonths" value="1"> January</label>
+    <label><input type="checkbox" name="availableMonths" value="2"> February</label>
+    <label><input type="checkbox" name="availableMonths" value="3"> March</label>
+    <label><input type="checkbox" name="availableMonths" value="4"> April</label>
+    <label><input type="checkbox" name="availableMonths" value="5"> May</label>
+    <label><input type="checkbox" name="availableMonths" value="6"> June</label>
+    <label><input type="checkbox" name="availableMonths" value="7"> July</label>
+    <label><input type="checkbox" name="availableMonths" value="8"> August</label>
+    <label><input type="checkbox" name="availableMonths" value="9"> September</label>
+    <label><input type="checkbox" name="availableMonths" value="10"> October</label>
+    <label><input type="checkbox" name="availableMonths" value="11"> November</label>
+    <label><input type="checkbox" name="availableMonths" value="12"> December</label>
+  </fieldset>
+
+  <div>
+    <label for="product-notes">Notes (optional)</label>
+    <textarea
+      id="product-notes"
+      name="notes"
+      rows="3"
+    ></textarea>
+  </div>
+
+  <button type="submit" id="save-product-button">
+    Save Product
+  </button>
+
+</form>
+
+
+  <button type="button" id="close-product-dialog">
+    Cancel
+  </button>
+
+</dialog>
 
   <footer>
     <p>Bye or Back — Discover what's in season.</p>
