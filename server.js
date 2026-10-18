@@ -5,6 +5,9 @@ import seasonalRouter from "./routes/seasonal.js";
 
 const app = express();
 const PORT = 3000;
+app.use(express.json());
+// Serve frontend files
+app.use(express.static("public"));
 app.use("/api/seasonal", seasonalRouter);
 
 app.get("/", (req, res) => {
