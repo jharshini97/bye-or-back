@@ -62,7 +62,6 @@ function DiscontinuedProducts() {
     return button;
   };
 
-  // Takes a product from the database and returns its card
   const renderProduct = (product) => {
     const card = document.createElement("article");
     card.className = "card mb-2";
@@ -141,7 +140,6 @@ function DiscontinuedProducts() {
   };
 
   const onSaveProduct = async (evt) => {
-    // Avoids reloading the page
     evt.preventDefault();
 
     const res = await fetch(

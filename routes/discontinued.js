@@ -47,7 +47,7 @@ router.get("/", async (req, res) => {
     Math.max(parseInt(req.query.pageSize) || 20, 1),
     100,
   );
-  // Escapes the search text so it matches literally in the name or the brand
+  // Escapes regex characters so the search is literal
   const text = String(req.query.query ?? "").replace(
     /[.*+?^${}()|[\]\\]/g,
     "\\$&",
@@ -63,7 +63,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// POST /api/discontinued
 router.post("/", async (req, res) => {
   const product = readProduct(req.body);
   if (!product) {
@@ -82,7 +81,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-// PUT /api/discontinued/:id
 router.put("/:id", async (req, res) => {
   if (!ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ error: "Invalid id" });
@@ -104,7 +102,6 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// DELETE /api/discontinued/:id
 router.delete("/:id", async (req, res) => {
   if (!ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ error: "Invalid id" });
