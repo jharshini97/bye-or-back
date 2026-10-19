@@ -11,6 +11,7 @@ const readProduct = ({
   category,
   discontinuedDate,
   notes,
+  editedBy,
 } = {}) => {
   const text = (value) => (typeof value === "string" ? value.trim() : "");
   const product = {
@@ -19,12 +20,25 @@ const readProduct = ({
     category: text(category),
     discontinuedDate: text(discontinuedDate),
     notes: text(notes),
+    lastEditedBy: text(editedBy),
   };
+  // A real calendar date as YYYY-MM-DD, or no date
   const validDate =
     !product.discontinuedDate ||
-    /^\d{4}-\d{2}-\d{2}$/.test(product.discontinuedDate);
-  return product.name && product.brand && validDate ? product : null;
+    new Date(product.discontinuedDate).toJSON()?.slice(0, 10) ===
+      product.discontinuedDate;
+  const short = Object.values(product).every((value) => value.length <= 500);
+  return product.name &&
+    product.brand &&
+    product.lastEditedBy &&
+    validDate &&
+    short
+    ? { ...product, lastEditedAt: new Date() }
+    : null;
 };
+
+const INVALID_REPORT =
+  "Name, brand and demo user are required, dates as YYYY-MM-DD, fields up to 500 characters";
 
 // GET /api/discontinued?query=&page=1&pageSize=20
 router.get("/", async (req, res) => {
@@ -53,9 +67,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   const product = readProduct(req.body);
   if (!product) {
-    return res
-      .status(400)
-      .json({ error: "Name and brand are required, dates as YYYY-MM-DD" });
+    return res.status(400).json({ error: INVALID_REPORT });
   }
 
   try {
@@ -72,9 +84,12 @@ router.post("/", async (req, res) => {
 
 // PUT /api/discontinued/:id
 router.put("/:id", async (req, res) => {
+  if (!ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ error: "Invalid id" });
+  }
   const product = readProduct(req.body);
-  if (!ObjectId.isValid(req.params.id) || !product) {
-    return res.status(400).json({ error: "Invalid id or report" });
+  if (!product) {
+    return res.status(400).json({ error: INVALID_REPORT });
   }
 
   try {
