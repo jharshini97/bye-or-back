@@ -1,0 +1,8 @@
+/* Keeps the report form in view while the list scrolls */
+@media (min-width: 768px) {
+  .report-panel {
+    position: sticky;
+    top: 1rem;
+    align-self: flex-start;
+  }
+}
