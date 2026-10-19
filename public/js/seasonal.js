@@ -12,6 +12,13 @@ const today = new Date();
 let selectedMonth = today.getMonth() + 1;
 const productDialogTitle = document.querySelector("#add-product-title");
 let editingProductId = null;
+const demoUserSelect = document.querySelector("#demo-user");
+
+const demoUsers = ["Priya", "Lucy", "Tom", "Ben"];
+
+const savedUser = sessionStorage.getItem("demoUser");
+
+demoUserSelect.value = demoUsers.includes(savedUser) ? savedUser : "";
 
 previousButton.addEventListener("click", () => {
   selectedMonth = selectedMonth === 1 ? 12 : selectedMonth - 1;
@@ -103,6 +110,7 @@ async function loadSeasonalProducts() {
       editButton.type = "button";
       editButton.classList.add("edit-product-button");
       editButton.textContent = "Edit";
+      editButton.hidden = demoUserSelect.value === "";
 
       editButton.addEventListener("click", () => {
         editingProductId = product._id;
@@ -130,13 +138,63 @@ async function loadSeasonalProducts() {
         productDialogTitle.textContent = "Edit Seasonal Product";
         saveProductButton.textContent = "Save Changes";
 
-        // We will enable this when PUT is implemented.
-        saveProductButton.disabled = true;
+        saveProductButton.disabled = false;
 
         addProductDialog.showModal();
       });
 
       card.appendChild(editButton);
+
+      // Create the Delete button before attaching its event listener.
+      const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.classList.add("delete-product-button");
+      deleteButton.textContent = "Delete";
+      deleteButton.hidden = demoUserSelect.value === "";
+
+      deleteButton.addEventListener("click", async () => {
+        if (!demoUserSelect.value) {
+          alert("Please select a demo user.");
+          return;
+        }
+
+        const confirmed = window.confirm(
+          `Are you sure you want to delete "${product.name}"?`,
+        );
+
+        if (!confirmed) {
+          return;
+        }
+
+        deleteButton.disabled = true;
+
+        try {
+          const response = await fetch(`/api/seasonal/${product._id}`, {
+            method: "DELETE",
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to delete product");
+          }
+
+          // Remove the deleted product from our local array.
+          const products = await productsRequest;
+
+          const index = products.findIndex((item) => item._id === product._id);
+
+          if (index !== -1) {
+            products.splice(index, 1);
+          }
+
+          await loadSeasonalProducts();
+        } catch (error) {
+          console.error("Error deleting product:", error);
+          alert(error.message);
+          deleteButton.disabled = false;
+        }
+      });
+
+      card.appendChild(deleteButton);
 
       productGrid.appendChild(card);
     }
@@ -169,9 +227,8 @@ closeProductDialog.addEventListener("click", () => {
 addProductForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  if (editingProductId !== null) {
-    return;
-  }
+  const isEditing = editingProductId !== null;
+  const productId = editingProductId;
 
   const formData = new FormData(addProductForm);
 
@@ -191,11 +248,26 @@ addProductForm.addEventListener("submit", async (event) => {
     notes: formData.get("notes"),
   };
 
+  if (isEditing) {
+    const selectedUser = demoUserSelect.value;
+
+    if (!selectedUser) {
+      alert("Please select a demo user to edit products.");
+      return;
+    }
+
+    productData.editedBy = selectedUser;
+  }
+
+  const url = isEditing ? `/api/seasonal/${productId}` : "/api/seasonal";
+
+  const method = isEditing ? "PUT" : "POST";
+
   saveProductButton.disabled = true;
 
   try {
-    const response = await fetch("/api/seasonal", {
-      method: "POST",
+    const response = await fetch(url, {
+      method,
       headers: {
         "Content-Type": "application/json",
       },
@@ -205,24 +277,63 @@ addProductForm.addEventListener("submit", async (event) => {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.error || "Failed to add product");
+      throw new Error(result.error || "Failed to save product");
     }
-    // Update the products stored in the frontend.
-    const products = await productsRequest;
-    products.push(result.product);
 
-    // Show the month containing the new product.
+    const products = await productsRequest;
+
+    if (isEditing) {
+      const index = products.findIndex((product) => product._id === productId);
+
+      if (index !== -1) {
+        products[index] = result.product;
+      }
+    } else {
+      products.push(result.product);
+    }
+
     selectedMonth = availableMonths[0];
     searchInput.value = "";
 
     addProductForm.reset();
     addProductDialog.close();
+    editingProductId = null;
 
     await loadSeasonalProducts();
   } catch (error) {
-    console.error("Error adding product:", error);
+    console.error("Error saving product:", error);
     alert(error.message);
   } finally {
     saveProductButton.disabled = false;
   }
 });
+
+function updateUserControls() {
+  const hasUser = demoUserSelect.value !== "";
+
+  // Show Add only when a demo user is selected.
+  addProductButton.hidden = !hasUser;
+
+  // Show or hide Edit and Delete buttons on existing cards.
+  const actionButtons = document.querySelectorAll(
+    ".edit-product-button, .delete-product-button",
+  );
+
+  for (const button of actionButtons) {
+    button.hidden = !hasUser;
+  }
+}
+
+demoUserSelect.addEventListener("change", () => {
+  const selectedUser = demoUserSelect.value;
+
+  if (selectedUser) {
+    sessionStorage.setItem("demoUser", selectedUser);
+  } else {
+    sessionStorage.removeItem("demoUser");
+  }
+
+  updateUserControls();
+});
+
+updateUserControls();

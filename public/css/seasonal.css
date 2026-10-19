@@ -1,4 +1,3 @@
-
 /* Seasonal products grid */
 .product-grid {
   display: grid;
@@ -135,4 +134,85 @@
   border-radius: 8px;
   background-color: white;
   cursor: pointer;
+}
+
+/* Header */
+.site-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.user-menu {
+  position: relative;
+  margin-left: auto;
+}
+
+.user-menu summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: #e8eef5;
+  color: #243b53;
+  cursor: pointer;
+  list-style: none;
+}
+
+.user-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.user-menu-panel {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  z-index: 10;
+  width: 210px;
+  padding: 16px;
+  background-color: white;
+  border: 1px solid #dce3eb;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.user-menu-panel label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.user-menu-panel select {
+  width: 100%;
+  padding: 8px;
+}
+
+.user-menu-panel p {
+  color: #526477;
+  font-size: 0.8rem;
+}
+[hidden] {
+  display: none !important;
+}
+
+.delete-product-button {
+  padding: 8px 14px;
+  margin: 8px 0 0 8px;
+  border: 1px solid #b91c1c;
+  border-radius: 8px;
+  background-color: white;
+  color: #b91c1c;
+  cursor: pointer;
+}
+
+.delete-product-button:hover {
+  background-color: #fee2e2;
+}
+
+.delete-product-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
