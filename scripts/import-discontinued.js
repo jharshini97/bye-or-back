@@ -1,22 +1,16 @@
-import { readFile } from "node:fs/promises";
+import products from "../data/discontinued-products.json" with { type: "json" };
 import {
   connectToDatabase,
   closeDatabaseConnection,
 } from "../db/connection.js";
 
-// Loads the USDA products once, into an empty collection
+// Loads the USDA products once
 try {
-  const products = JSON.parse(
-    await readFile(
-      new URL("../data/discontinued-products.json", import.meta.url),
-      "utf8",
-    ),
-  );
   const db = await connectToDatabase();
   const collection = db.collection("discontinuedProducts");
 
-  if ((await collection.countDocuments()) > 0) {
-    console.log("discontinuedProducts already has data, nothing imported");
+  if (await collection.findOne({ source: "USDA FoodData Central" })) {
+    console.log("USDA products already imported");
   } else {
     const result = await collection.insertMany(
       products.map((product) => ({

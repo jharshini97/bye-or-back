@@ -14,7 +14,7 @@
     "url": "git+https://github.com/rivaimee/bye-or-back.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Suk Jin Mun and Alejandra Aimee Rivas Montes",
   "license": "MIT",
   "type": "module",
   "bugs": {
@@ -32,5 +32,8 @@
     "eslint-plugin-prettier": "^5.5.7",
     "globals": "^16.5.0",
     "prettier": "^3.9.10"
+  },
+  "engines": {
+    "node": ">=22.12"
   }
 }
