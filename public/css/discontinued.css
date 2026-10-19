@@ -3,6 +3,11 @@
   display: none;
 }
 
+/* Shows the login hint only while no demo user is chosen */
+body:not(.no-user) .visitor-hint {
+  display: none;
+}
+
 /* Keeps the report form in view while the list scrolls */
 @media (min-width: 768px) and (min-height: 640px) {
   .report-panel {
