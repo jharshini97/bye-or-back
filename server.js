@@ -1,4 +1,3 @@
-
 import express from "express";
 import { connectToDatabase } from "./db/connection.js";
 import seasonalRouter from "./routes/seasonal.js";
