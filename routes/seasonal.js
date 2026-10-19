@@ -22,7 +22,7 @@ router.post("/", async (req, res) => {
     const { name, brand, category, season, availableMonths, notes, editedBy } =
       req.body ?? {};
 
-    const requiredFields = [name, brand, category, season];
+    const requiredFields = [name, brand, season];
 
     if (
       !requiredFields.every(
@@ -30,7 +30,7 @@ router.post("/", async (req, res) => {
       )
     ) {
       return res.status(400).json({
-        error: "Name, brand, category, and season are required",
+        error: "Name, brand, and season are required",
       });
     }
 
@@ -43,6 +43,12 @@ router.post("/", async (req, res) => {
     ) {
       return res.status(400).json({
         error: "Available months must be an array of numbers from 1 to 12",
+      });
+    }
+
+    if (category !== undefined && typeof category !== "string") {
+      return res.status(400).json({
+        error: "Category must be a string",
       });
     }
 
@@ -68,7 +74,7 @@ router.post("/", async (req, res) => {
     const product = {
       name: name.trim(),
       brand: brand.trim(),
-      category: category.trim(),
+      category: category?.trim() ?? "",
       season: season.trim(),
       availableMonths: [...new Set(availableMonths)],
       notes: notes?.trim() ?? "",
@@ -119,7 +125,7 @@ router.put("/:id", async (req, res) => {
       req.body ?? {};
 
     // Validate required fields
-    const requiredFields = [name, brand, category, season];
+    const requiredFields = [name, brand, season];
 
     if (
       !requiredFields.every(
@@ -127,7 +133,7 @@ router.put("/:id", async (req, res) => {
       )
     ) {
       return res.status(400).json({
-        error: "Name, brand, category, and season are required",
+        error: "Name, brand, and season are required",
       });
     }
 
@@ -141,6 +147,12 @@ router.put("/:id", async (req, res) => {
     ) {
       return res.status(400).json({
         error: "Available months must be an array of numbers from 1 to 12",
+      });
+    }
+
+    if (category !== undefined && typeof category !== "string") {
+      return res.status(400).json({
+        error: "Category must be a string",
       });
     }
 
@@ -161,7 +173,7 @@ router.put("/:id", async (req, res) => {
     const updatedData = {
       name: name.trim(),
       brand: brand.trim(),
-      category: category.trim(),
+      category: category?.trim() ?? "",
       season: season.trim(),
       availableMonths: [...new Set(availableMonths)],
       notes: notes?.trim() ?? "",
