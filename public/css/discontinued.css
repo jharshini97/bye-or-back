@@ -1,0 +1,13 @@
+/* Hides the report tools until a demo user is chosen */
+.no-user .needs-user {
+  display: none;
+}
+
+/* Keeps the report form in view while the list scrolls */
+@media (min-width: 768px) and (min-height: 640px) {
+  .report-panel {
+    position: sticky;
+    top: 1rem;
+    align-self: flex-start;
+  }
+}
