@@ -3,10 +3,12 @@ function DiscontinuedProducts() {
   const pageSize = 20;
   let page = 1;
   let editingId = null;
+  let lastRequest = 0;
 
   const formSearch = document.querySelector("#formSearch");
   const formProduct = document.querySelector("#formProduct");
-  const formTitle = document.querySelector("#form-title");
+  const formTitle = document.querySelector("#formTitle");
+  const demoUser = document.querySelector("#demoUser");
 
   me.showMessage = (message, type = "danger") => {
     const wrapper = document.createElement("div");
@@ -17,17 +19,19 @@ function DiscontinuedProducts() {
     document.querySelector("#messages").append(wrapper);
   };
 
+  // The demo user lives in sessionStorage, shared with the seasonal page
+  const onChangeUser = () => {
+    if (demoUser.value) sessionStorage.setItem("demoUser", demoUser.value);
+    else sessionStorage.removeItem("demoUser");
+    document.body.classList.toggle("no-user", !demoUser.value);
+    if (!demoUser.value) formProduct.reset();
+  };
+
   // Returns a callback that loads the product into the form
   const onEditProduct = (product) => () => {
     editingId = product._id;
-    for (const field of [
-      "name",
-      "brand",
-      "category",
-      "discontinuedDate",
-      "notes",
-    ]) {
-      formProduct.elements[field].value = product[field] ?? "";
+    for (const input of formProduct.querySelectorAll("[name]")) {
+      input.value = product[input.name] ?? "";
     }
     formTitle.textContent = "Edit the report";
     formProduct.elements.name.focus();
@@ -44,14 +48,14 @@ function DiscontinuedProducts() {
       me.showMessage("Error deleting the product");
       return;
     }
+    if (product._id === editingId) formProduct.reset();
     me.showMessage("Product deleted", "warning");
     me.reloadProducts();
   };
 
   const createButton = (label, className, product, onClick) => {
     const button = document.createElement("button");
-    button.type = "button";
-    button.className = `btn btn-sm me-2 ${className}`;
+    button.className = `btn btn-sm me-2 needs-user ${className}`;
     button.textContent = label;
     button.ariaLabel = `${label} ${product.name}`;
     button.addEventListener("click", onClick(product));
@@ -72,7 +76,11 @@ function DiscontinuedProducts() {
     const [title, details, notes] = card.querySelectorAll("h3, p");
     title.textContent = product.name;
     details.textContent = `${product.brand}, discontinued ${product.discontinuedDate || "on an unknown date"}`;
-    notes.textContent = [product.category, product.notes]
+    notes.textContent = [
+      product.category,
+      product.notes,
+      product.lastEditedBy && `Last edited by ${product.lastEditedBy}`,
+    ]
       .filter(Boolean)
       .join(". ");
 
@@ -93,21 +101,21 @@ function DiscontinuedProducts() {
     for (let i = Math.max(1, page - 3); i <= Math.min(maxPage, page + 3); i++) {
       const li = document.createElement("li");
       li.className = i === page ? "page-item active" : "page-item";
-      const a = document.createElement("a");
-      a.className = "page-link";
-      a.href = "#";
-      a.textContent = i;
-      a.addEventListener("click", (evt) => {
-        evt.preventDefault();
+      const button = document.createElement("button");
+      button.className = "page-link";
+      button.textContent = i;
+      if (i === page) button.ariaCurrent = "page";
+      button.addEventListener("click", () => {
         page = i;
         me.reloadProducts();
       });
-      li.append(a);
+      li.append(button);
       pagination.append(li);
     }
   };
 
   me.reloadProducts = async () => {
+    const request = ++lastRequest;
     const query = encodeURIComponent(formSearch.elements.query.value);
     const res = await fetch(
       `/api/discontinued?query=${query}&page=${page}&pageSize=${pageSize}`,
@@ -118,7 +126,14 @@ function DiscontinuedProducts() {
     }
 
     const { products, total } = await res.json();
-    document.querySelector("#total").textContent = `${total} products found`;
+    // Drops a response that a newer search or page already replaced
+    if (request !== lastRequest) return;
+    // Steps back when a delete or an edit emptied the last page
+    if (!products.length && page > 1) {
+      page = Math.ceil(total / pageSize) || 1;
+      return me.reloadProducts();
+    }
+    document.querySelector("#total").textContent = `Products found: ${total}`;
     document
       .querySelector("#products")
       .replaceChildren(...products.map(renderProduct));
@@ -134,7 +149,10 @@ function DiscontinuedProducts() {
       {
         method: editingId ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(Object.fromEntries(new FormData(formProduct))),
+        body: JSON.stringify({
+          ...Object.fromEntries(new FormData(formProduct)),
+          editedBy: demoUser.value,
+        }),
       },
     );
     if (!res.ok) {
@@ -159,6 +177,9 @@ function DiscontinuedProducts() {
     page = 1;
     me.reloadProducts();
   });
+  demoUser.addEventListener("change", onChangeUser);
+  demoUser.value = sessionStorage.getItem("demoUser") ?? "";
+  onChangeUser();
 
   return me;
 }
