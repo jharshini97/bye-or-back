@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node --env-file-if-exists=.env server.js",
     "lint": "eslint .",
-    "import:discontinued": "node --env-file-if-exists=.env scripts/import-discontinued.js"
+    "import:discontinued": "node --env-file-if-exists=.env scripts/import-discontinued.js",
+    "import:seasonal": "node --env-file-if-exists=.env scripts/import-seasonal.js"
   },
   "repository": {
     "type": "git",

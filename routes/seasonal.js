@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { getDatabase } from "../db/connection.js";
 import { ObjectId } from "mongodb";
-import { categoryGroups } from "../scripts/category-groups.js";
 const router = Router();
 //metodo GET
 router.get("/", async (req, res) => {
@@ -20,27 +19,10 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { name, brand, category, season, availableMonths, notes } =
+    const { name, brand, category, season, availableMonths, notes, editedBy } =
       req.body ?? {};
 
-    // Validate required text fields
-    const requiredFields = [name, brand, season];
-
-    const selectedCategory = category == null ? "" : category;
-
-    if (typeof selectedCategory !== "string") {
-      return res.status(400).json({
-        error: "Category must be a string",
-      });
-    }
-
-    const finalCategory = selectedCategory.trim() || "Other / Uncategorized";
-
-    if (!Object.hasOwn(categoryGroups, finalCategory)) {
-      return res.status(400).json({
-        error: "Invalid product category",
-      });
-    }
+    const requiredFields = [name, brand, category, season];
 
     if (
       !requiredFields.every(
@@ -48,11 +30,10 @@ router.post("/", async (req, res) => {
       )
     ) {
       return res.status(400).json({
-        error: "Name, brand and season are required",
+        error: "Name, brand, category, and season are required",
       });
     }
 
-    // Validate availability months
     if (
       !Array.isArray(availableMonths) ||
       availableMonths.length === 0 ||
@@ -71,30 +52,33 @@ router.post("/", async (req, res) => {
       });
     }
 
+    if (editedBy !== undefined && typeof editedBy !== "string") {
+      return res.status(400).json({
+        error: "Editor name must be a string",
+      });
+    }
+
+    const editor =
+      typeof editedBy === "string" && editedBy.trim() !== ""
+        ? editedBy.trim()
+        : null;
+
     const now = new Date();
 
     const product = {
       name: name.trim(),
       brand: brand.trim(),
-      category: finalCategory,
+      category: category.trim(),
       season: season.trim(),
       availableMonths: [...new Set(availableMonths)],
       notes: notes?.trim() ?? "",
-
-      // Seasonal classification
       seasonStatus: "estimated",
-
-      // Original source
       source: "Community",
-
-      // Creation information
       createdAt: now,
-      createdBy: null,
-
-      // Update information
+      createdBy: editor,
       updatedAt: now,
-      lastEditedBy: null,
-      lastEditedAt: null,
+      lastEditedBy: editor,
+      lastEditedAt: editor ? now : null,
     };
 
     const db = getDatabase();
@@ -135,7 +119,7 @@ router.put("/:id", async (req, res) => {
       req.body ?? {};
 
     // Validate required fields
-    const requiredFields = [name, brand, season];
+    const requiredFields = [name, brand, category, season];
 
     if (
       !requiredFields.every(
@@ -143,23 +127,7 @@ router.put("/:id", async (req, res) => {
       )
     ) {
       return res.status(400).json({
-        error: "Name, brand, and season are required",
-      });
-    }
-
-    const selectedCategory = category == null ? "" : category;
-
-    if (typeof selectedCategory !== "string") {
-      return res.status(400).json({
-        error: "Category must be a string",
-      });
-    }
-
-    const finalCategory = selectedCategory.trim() || "Other / Uncategorized";
-
-    if (!Object.hasOwn(categoryGroups, finalCategory)) {
-      return res.status(400).json({
-        error: "Invalid product category",
+        error: "Name, brand, category, and season are required",
       });
     }
 
@@ -182,24 +150,28 @@ router.put("/:id", async (req, res) => {
       });
     }
 
-    if (typeof editedBy !== "string" || editedBy.trim() === "") {
+    if (editedBy !== undefined && typeof editedBy !== "string") {
       return res.status(400).json({
-        error: "Editor name is required",
+        error: "Editor name must be a string",
       });
     }
 
-    // Prepare updated data
+    const now = new Date();
+
     const updatedData = {
       name: name.trim(),
       brand: brand.trim(),
-      category: finalCategory,
+      category: category.trim(),
       season: season.trim(),
       availableMonths: [...new Set(availableMonths)],
       notes: notes?.trim() ?? "",
-      updatedAt: new Date(),
-      lastEditedBy: editedBy.trim(),
-      lastEditedAt: new Date(),
+      updatedAt: now,
     };
+
+    if (typeof editedBy === "string" && editedBy.trim() !== "") {
+      updatedData.lastEditedBy = editedBy.trim();
+      updatedData.lastEditedAt = now;
+    }
 
     const db = getDatabase();
     const productId = new ObjectId(id);
