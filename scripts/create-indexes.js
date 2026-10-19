@@ -1,24 +1,21 @@
-
 import {
   connectToDatabase,
-  closeDatabaseConnection
+  closeDatabaseConnection,
 } from "../db/connection.js";
 
 try {
   const db = await connectToDatabase();
 
-  const indexName = await db
-    .collection("seasonalProducts")
-    .createIndex(
-      { fdcId: 1 },
-      {
-        name: "unique_usda_fdc_id",
-        unique: true,
-        partialFilterExpression: {
-          fdcId: { $type: "number" }
-        }
-      }
-    );
+  const indexName = await db.collection("seasonalProducts").createIndex(
+    { fdcId: 1 },
+    {
+      name: "unique_usda_fdc_id",
+      unique: true,
+      partialFilterExpression: {
+        fdcId: { $type: "number" },
+      },
+    },
+  );
 
   console.log("Index created:", indexName);
 } catch (error) {

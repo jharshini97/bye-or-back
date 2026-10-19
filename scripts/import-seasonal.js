@@ -1,89 +1,45 @@
-
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-import { normalizeCategory } from "./category-groups.js";
+import products from "../data/seasonal-products.json" with { type: "json" };
 import {
   connectToDatabase,
-  closeDatabaseConnection
+  closeDatabaseConnection,
 } from "../db/connection.js";
 
-const dataDirectory = path.resolve(
-  import.meta.dirname,
-  "../../usda-data"
-);
-
-const inputPath = path.join(
-  dataDirectory,
-  "seasonal-enriched.json"
-);
-
-const monthsBySeason = {
-  Spring: [3, 4, 5],
-  Summer: [6, 7, 8],
-  Fall: [9, 10, 11],
-  Winter: [12, 1, 2]
-};
-
-const importLimit = 100;
-
-async function importProducts() {
-  const candidates = JSON.parse(
-    await readFile(inputPath, "utf8")
-  );
-
-  const selectedProducts = candidates.slice(0, importLimit);
-
+try {
   const db = await connectToDatabase();
   const collection = db.collection("seasonalProducts");
 
   let inserted = 0;
   let skipped = 0;
 
-  for (const candidate of selectedProducts) {
-    const months = monthsBySeason[candidate.candidateSeason];
-
-    if (!months || !Number.isInteger(candidate.fdcId)) {
-      throw new Error(
-        `Invalid product data: ${candidate.fdcId}`
-      );
+  for (const product of products) {
+    if (!Number.isInteger(product.fdcId)) {
+      throw new Error(`Invalid product data: ${product.name}`);
     }
 
-    const originalCategory = candidate.category?.trim() || null;
-    const category = normalizeCategory(originalCategory);
-
-    if (category === null) {
-    throw new Error(
-        `Unknown category: ${originalCategory} (fdcId: ${candidate.fdcId})`
-    );
-    }
-        
     const now = new Date();
 
-    const product = {
-      fdcId: candidate.fdcId,
-      name: candidate.name,
-      brand: candidate.brand,
-      category,
-    originalCategory,
-
-      season: candidate.candidateSeason,
-      availableMonths: [...months],
+    const document = {
+      fdcId: product.fdcId,
+      name: product.name,
+      brand: product.brand,
+      category: product.category,
+      originalCategory: product.originalCategory,
+      season: product.season,
+      availableMonths: [...product.availableMonths],
       seasonStatus: "estimated",
-
       notes: "",
       source: "USDA FoodData Central",
-
       createdAt: now,
       createdBy: null,
       updatedAt: now,
       lastEditedBy: null,
-      lastEditedAt: null
+      lastEditedAt: null,
     };
 
     const result = await collection.updateOne(
-      { fdcId: product.fdcId },
-      { $setOnInsert: product },
-      { upsert: true }
+      { fdcId: document.fdcId },
+      { $setOnInsert: document },
+      { upsert: true },
     );
 
     if (result.upsertedCount === 1) {
@@ -93,13 +49,9 @@ async function importProducts() {
     }
   }
 
-  console.log("Products selected:", selectedProducts.length);
+  console.log("Products selected:", products.length);
   console.log("Products inserted:", inserted);
   console.log("Existing products skipped:", skipped);
-}
-
-try {
-  await importProducts();
 } catch (error) {
   console.error("Import error:", error.message);
   process.exitCode = 1;

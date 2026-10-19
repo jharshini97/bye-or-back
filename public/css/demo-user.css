@@ -1,0 +1,87 @@
+/* Shared demo-user menu for Bye or Back. */
+
+#demo-user-container {
+  position: relative;
+  margin-left: auto;
+}
+
+.user-menu summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 42px;
+  height: 42px;
+  padding: 0 6px;
+  border-radius: 21px;
+  background-color: #e8eef5;
+  color: #243b53;
+  cursor: pointer;
+  list-style: none;
+}
+
+.user-menu summary svg {
+  flex: 0 0 auto;
+}
+
+.user-menu-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.user-menu-name:empty {
+  display: none;
+}
+
+.user-menu summary:has(.user-menu-name:empty) {
+  width: 42px;
+  padding: 0;
+}
+
+.user-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.user-menu-panel {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  z-index: 20;
+  width: 235px;
+  box-sizing: border-box;
+  padding: 16px;
+  border: 1px solid #dce3eb;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.demo-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.demo-login-form label {
+  font-weight: 600;
+}
+
+.demo-login-form select,
+.demo-login-form input,
+.demo-login-form button {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px;
+}
+
+.demo-login-form button {
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.demo-login-form p {
+  margin: 4px 0 0;
+  color: #526477;
+  font-size: 0.8rem;
+}
