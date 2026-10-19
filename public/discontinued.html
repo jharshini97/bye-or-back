@@ -14,30 +14,21 @@
       integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="./css/demo-user.css" />
     <link rel="stylesheet" href="./css/discontinued.css" />
   </head>
   <body>
     <div class="container">
-      <header class="py-3">
-        <h1>Bye or Back</h1>
+      <header class="py-3 d-flex flex-wrap align-items-center gap-3">
+        <h1 class="mb-0">Bye or Back</h1>
         <nav aria-label="Main navigation">
+          <a href="index.html">Home</a> |
           <a href="seasonal.html">Seasonal Products</a> |
           <a href="discontinued.html" aria-current="page">
             Discontinued Products
           </a>
         </nav>
-        <div class="mt-2">
-          <label for="demoUser" class="form-label">
-            Demo user, needed to add, edit, or delete reports
-          </label>
-          <select id="demoUser" class="form-select w-auto">
-            <option value="">No user</option>
-            <option>Priya</option>
-            <option>Lucy</option>
-            <option>Tom</option>
-            <option>Ben</option>
-          </select>
-        </div>
+        <div id="demo-user-container"></div>
       </header>
 
       <main>

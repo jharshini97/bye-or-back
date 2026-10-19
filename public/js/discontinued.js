@@ -1,3 +1,5 @@
+import { initDemoUser, getCurrentUser, onDemoUserChange } from "./demo-user.js";
+
 function DiscontinuedProducts() {
   const me = {};
   const pageSize = 20;
@@ -8,7 +10,6 @@ function DiscontinuedProducts() {
   const formSearch = document.querySelector("#formSearch");
   const formProduct = document.querySelector("#formProduct");
   const formTitle = document.querySelector("#formTitle");
-  const demoUser = document.querySelector("#demoUser");
 
   me.showMessage = (message, type = "danger") => {
     const wrapper = document.createElement("div");
@@ -19,12 +20,10 @@ function DiscontinuedProducts() {
     document.querySelector("#messages").append(wrapper);
   };
 
-  // The demo user lives in sessionStorage, shared with the seasonal page
-  const onChangeUser = () => {
-    if (demoUser.value) sessionStorage.setItem("demoUser", demoUser.value);
-    else sessionStorage.removeItem("demoUser");
-    document.body.classList.toggle("no-user", !demoUser.value);
-    if (!demoUser.value) formProduct.reset();
+  // Shows the report tools only while a demo user is chosen
+  const onChangeUser = (user) => {
+    document.body.classList.toggle("no-user", !user);
+    if (!user) formProduct.reset();
   };
 
   // Returns a callback that loads the product into the form
@@ -149,7 +148,7 @@ function DiscontinuedProducts() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...Object.fromEntries(new FormData(formProduct)),
-          editedBy: demoUser.value,
+          editedBy: getCurrentUser(),
         }),
       },
     );
@@ -175,13 +174,13 @@ function DiscontinuedProducts() {
     page = 1;
     me.reloadProducts();
   });
-  demoUser.addEventListener("change", onChangeUser);
-  demoUser.value = sessionStorage.getItem("demoUser") ?? "";
-  onChangeUser();
+  onDemoUserChange(onChangeUser);
+  onChangeUser(getCurrentUser());
 
   return me;
 }
 
 const discontinuedProducts = DiscontinuedProducts();
 
+initDemoUser();
 discontinuedProducts.reloadProducts();
