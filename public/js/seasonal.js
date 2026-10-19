@@ -239,7 +239,7 @@ function createProductCard(product) {
     "edit-product-button",
   );
   editButton.textContent = "Edit";
-  editButton.hidden = activeDemoUser === "";
+  editButton.classList.toggle("d-none", activeDemoUser === "");
 
   editButton.addEventListener("click", () => {
     editingProductId = product._id;
@@ -278,7 +278,7 @@ function createProductCard(product) {
     "delete-product-button",
   );
   deleteButton.textContent = "Delete";
-  deleteButton.hidden = activeDemoUser === "";
+  deleteButton.classList.toggle("d-none", activeDemoUser === "");
 
   deleteButton.addEventListener("click", async () => {
     if (!activeDemoUser) {
@@ -596,14 +596,14 @@ addProductForm.addEventListener("submit", async (event) => {
 function updateUserControls() {
   const hasUser = activeDemoUser !== "";
 
-  addProductButton.hidden = !hasUser;
+  addProductButton.classList.toggle("d-none", !hasUser);
 
   const actionButtons = document.querySelectorAll(
     ".edit-product-button, .delete-product-button",
   );
 
   for (const button of actionButtons) {
-    button.hidden = !hasUser;
+    button.classList.toggle("d-none", !hasUser);
   }
 }
 
