@@ -12,7 +12,7 @@ Suk Jin Mun (Discontinued Products) and Alejandra Aimee Rivas Montes (Seasonal P
 
 ## Objective
 
-Shoppers search discontinued products by name or brand, see which seasonal products are available each month, and add, edit, or delete reports. Each author owns one MongoDB collection with full CRUD through Node, Express, and vanilla JavaScript.
+Shoppers search discontinued products by name or brand, see which seasonal products are available each month or season, and add, edit, or delete reports. Each author owns one MongoDB collection with full CRUD through Node, Express, and vanilla JavaScript.
 
 ### Demo User Selection
 
@@ -29,16 +29,24 @@ The selected persona is stored in `sessionStorage` and used to populate the `las
 
 ## Screenshot
 
+
+![Home page](screenshots/homepage.png)
+
 ![Discontinued Products page](screenshots/discontinued.png)
 
+![Seasonal Products page](screenshots/seasonal.png)
 ## Instructions to build
 
 1. Install Node 22.12 or later and run `npm install`.
 2. Copy `.env.example` to `.env` and set `MONGODB_URI` to the MongoDB Atlas connection string.
 3. Run `npm run import:discontinued` once. It loads the 1,968 products in `data/discontinued-products.json`, taken from the April 2026 USDA FoodData Central Branded Foods release (products with a discontinued date, one per UPC).
-4. Run `npm run import:seasonal` once. It loads the 1,040 products in `data/seasonal-products.json`.
+4. Run `npm run import:seasonal` once. It loads the 1,200 products in `data/seasonal-products.json`.
 5. Run `npm start`, open http://localhost:3000, and log in as a demo user from the top right menu with any password to add, edit, or delete products.
 6. Run `npm run lint` to check the code with ESLint and Prettier.
+
+## License
+
+Released under the [MIT License](LICENSE).
 
 ## Code freeze
 
