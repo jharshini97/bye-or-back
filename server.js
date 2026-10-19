@@ -11,10 +11,6 @@ app.use(express.static("public"));
 app.use("/api/seasonal", seasonalRouter);
 app.use("/api/discontinued", discontinuedRouter);
 
-app.get("/", (req, res) => {
-  res.send("Welcome to Bye or Back!");
-});
-
 try {
   await connectToDatabase();
   console.log("Successfully connected to MongoDB!");
