@@ -27,6 +27,10 @@ The selected persona is stored in `sessionStorage` and used to populate the `las
 
 **Important:** This feature is for demonstration purposes only. It does not provide real authentication or authorization. Users can freely select a persona, and the recorded editor's identity is not verified. Backend API endpoints are not protected by this selector.
 
+## Design documents
+
+- [Discontinued Products, Suk Jin Mun](https://drive.google.com/file/d/1uPjrQy9pjRdQTSbbA8YmrdIl5tvl85P8/view?usp=sharing)
+
 ## Screenshot
 
 
