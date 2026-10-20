@@ -30,6 +30,9 @@ The selected persona is stored in `sessionStorage` and used to populate the `las
 ## Design documents
 
 - [Discontinued Products, Suk Jin Mun](https://drive.google.com/file/d/1uPjrQy9pjRdQTSbbA8YmrdIl5tvl85P8/view?usp=sharing)
+- [Seasonal Products, Alejandra Aimee Rivas Montes](https://docs.google.com/document/d/1mXePnsW6ohuy7B4YRAlxCzTVjUg_EhXZ/edit?usp=sharing&ouid=102296971848383812505&rtpof=true&sd=true)
+
+
 
 ## Screenshot
 
