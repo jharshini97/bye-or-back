@@ -42,6 +42,11 @@ The selected persona is stored in `sessionStorage` and used to populate the `las
 ![Discontinued Products page](screenshots/discontinued.png)
 
 ![Seasonal Products page](screenshots/seasonal.png)
+
+##Video demo
+https://youtu.be/Ma6keYYv9Ws
+
+
 ## Instructions to build
 
 1. Install Node 22.12 or later and run `npm install`.
