@@ -27,7 +27,9 @@ const readProduct = ({
     !product.discontinuedDate ||
     new Date(product.discontinuedDate).toJSON()?.slice(0, 10) ===
       product.discontinuedDate;
-  const short = Object.values(product).every((value) => value.length <= 500);
+  // Jharshini: in public/discontinued.html the limits for name,brand, and categoru is set to lower values
+  // anyone calling the API directly can store longer names than the form allpws
+  const short = Object.values(product).every((value) => value.length <= 500); 
   return product.name &&
     product.brand &&
     product.lastEditedBy &&
@@ -68,7 +70,9 @@ router.post("/", async (req, res) => {
   if (!product) {
     return res.status(400).json({ error: INVALID_REPORT });
   }
-
+  // Jharshini: a small suggestion. POST stores the reporter only in LastEditedBy
+  // so the original reporter is lost after an edit
+  // consider adding createdBy/createdAt
   try {
     const result = await myDB.createProduct({
       ...product,
