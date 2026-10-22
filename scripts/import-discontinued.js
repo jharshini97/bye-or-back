@@ -9,6 +9,7 @@ try {
   const db = await connectToDatabase();
   const collection = db.collection("discontinuedProducts");
 
+  // Jharshini: I like that the implementation prevents re-runs from duplicating data
   if (await collection.findOne({ source: "USDA FoodData Central" })) {
     console.log("USDA products already imported");
   } else {
