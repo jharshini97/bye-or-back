@@ -11,6 +11,8 @@ function DiscontinuedProducts() {
   const formProduct = document.querySelector("#formProduct");
   const formTitle = document.querySelector("#formTitle");
 
+  // Jharshini: alerts are appended and never cleared, so they pile up. Consider
+  // replacing the previous one or auto-dismissing.
   me.showMessage = (message, type = "danger") => {
     const wrapper = document.createElement("div");
     wrapper.innerHTML = `<div class="alert alert-${type} alert-dismissible" role="alert">
@@ -112,9 +114,12 @@ function DiscontinuedProducts() {
     }
   };
 
+  // Jharshini: I like that you added the counter to stop older responses from overwriting
+  // newer results
   me.reloadProducts = async () => {
     const request = ++lastRequest;
     const query = encodeURIComponent(formSearch.elements.query.value);
+    // Jharshini: fetch throws on network failure, which skips the !res.ok branch
     const res = await fetch(
       `/api/discontinued?query=${query}&page=${page}&pageSize=${pageSize}`,
     );
