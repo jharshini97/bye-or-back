@@ -5,11 +5,12 @@ function MyDBDiscontinued() {
   const me = {};
   const products = () => getDatabase().collection("discontinuedProducts");
 
+  // Jharshini: I like that there's a tie-breaker so items don't repeat/go missing
   me.getProducts = async ({ query = {}, page = 1, pageSize = 20 } = {}) => {
     const [list, total] = await Promise.all([
       products()
         .find(query)
-        .sort({ discontinuedDate: -1, _id: 1 })
+        .sort({ discontinuedDate: -1, _id: 1 }) 
         .skip(pageSize * (page - 1))
         .limit(pageSize)
         .toArray(),
